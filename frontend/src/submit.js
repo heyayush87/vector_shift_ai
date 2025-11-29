@@ -6,13 +6,14 @@ export const SubmitButton = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/pipelines/parse", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nodes, edges }),
-      });
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/pipelines/parse`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ nodes, edges }),
+});
+
 
       if (!response.ok) {
         throw new Error("Backend error");
@@ -23,7 +24,7 @@ export const SubmitButton = () => {
         `Pipeline summary:
 Nodes: ${data.num_nodes}
 Edges: ${data.num_edges}
-Is DAG: ${data.is_dag ? "Yes ✅" : "No ❌"}`
+Is DAG: ${data.is_dag ? "Yes " : "No "}`
       );
     } catch (err) {
       console.error(err);
