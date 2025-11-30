@@ -6,22 +6,20 @@ from collections import deque
 
 app = FastAPI()
 
-# Allow frontend on localhost:3000
+# ✅ FIXED CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],   # Allow Vercel + localhost
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 class Node(BaseModel):
     id: str
     type: Optional[str] = None
     data: Optional[Dict] = None
     position: Optional[Dict] = None
-
 
 class Edge(BaseModel):
     id: Optional[str] = None
@@ -30,16 +28,13 @@ class Edge(BaseModel):
     sourceHandle: Optional[str] = None
     targetHandle: Optional[str] = None
 
-
 class Pipeline(BaseModel):
     nodes: List[Node]
     edges: List[Edge]
 
-
 @app.get("/")
 def read_root():
     return {"Ping": "Pong"}
-
 
 @app.post("/pipelines/parse")
 def parse_pipeline(pipeline: Pipeline):
@@ -55,19 +50,22 @@ def parse_pipeline(pipeline: Pipeline):
             adj[e.source].append(e.target)
             indegree[e.target] += 1
 
-    # Kahn's algorithm for DAG detection
     q = deque([nid for nid, d in indegree.items() if d == 0])
     visited = 0
 
     while q:
-      u = q.popleft()
-      visited += 1
-      for v in adj[u]:
-        indegree[v] -= 1
-        if indegree[v] == 0:
-          q.append(v)
+        u = q.popleft()
+        visited += 1
+        for v in adj[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                q.append(v)
 
     is_dag = visited == num_nodes
+
+    # Debug
+    print("Nodes:", num_nodes)
+    print("Edges:", num_edges)
 
     return {
         "num_nodes": num_nodes,
