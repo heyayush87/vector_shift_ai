@@ -12,9 +12,16 @@ export const InputNode = ({ id, data }) => {
     updateNodeField(id, "inputType", e.target.value);
   };
 
+  // ✅ FIX: allow empty input value instead of forcing default
   const currName =
-    data?.inputName || id.replace("customInput-", "input_");
-  const inputType = data?.inputType || "Text";
+    data?.inputName !== undefined
+      ? data.inputName
+      : id.replace("customInput-", "input_");
+
+  const inputType =
+    data?.inputType !== undefined
+      ? data.inputType
+      : "Text";
 
   return (
     <BaseNode

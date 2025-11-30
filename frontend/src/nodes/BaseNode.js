@@ -1,5 +1,5 @@
-// nodes/BaseNode.js
 import { Handle, Position } from "reactflow";
+import { useStore } from "../store";
 
 export default function BaseNode({
   id,
@@ -9,19 +9,42 @@ export default function BaseNode({
   outputs = [],
   children,
 }) {
+  const removeNode = useStore((s) => s.removeNode);
+
   return (
     <div
       style={{
+        position: "relative",
         minWidth: 220,
         borderRadius: 10,
         border: "1px solid #1f2933",
         background: "#0b1120",
         color: "#e5e7eb",
-        padding: "8px 10px",
+        padding: "10px 12px",
         fontSize: 12,
         boxShadow: "0 10px 25px rgba(15, 23, 42, 0.5)",
       }}
     >
+      {/* ❌ REMOVE BUTTON */}
+      <button
+        onClick={() => removeNode(id)}
+        style={{
+          position: "absolute",
+          top: 5,
+          right: 6,
+          background: "transparent",
+          border: "none",
+          color: "#f87171",
+          fontSize: 14,
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+        title="Delete node"
+      >
+        ×
+      </button>
+
+      {/* HEADER */}
       <div
         style={{
           borderBottom: "1px solid #1f2933",
@@ -35,9 +58,10 @@ export default function BaseNode({
         )}
       </div>
 
+      {/* BODY */}
       <div>{children}</div>
 
-      {/* Inputs on left */}
+      {/* INPUT HANDLES */}
       {inputs.map((name, i) => (
         <Handle
           key={name}
@@ -45,7 +69,7 @@ export default function BaseNode({
           position={Position.Left}
           id={`${id}-${name}`}
           style={{
-            top: 40 + i * 18,
+            top: 50 + i * 18,
             width: 10,
             height: 10,
             background: "#22c55e",
@@ -53,7 +77,7 @@ export default function BaseNode({
         />
       ))}
 
-      {/* Outputs on right */}
+      {/* OUTPUT HANDLES */}
       {outputs.map((name, i) => (
         <Handle
           key={name}
@@ -61,7 +85,7 @@ export default function BaseNode({
           position={Position.Right}
           id={`${id}-${name}`}
           style={{
-            top: 40 + i * 18,
+            top: 50 + i * 18,
             width: 10,
             height: 10,
             background: "#3b82f6",

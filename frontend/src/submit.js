@@ -1,4 +1,3 @@
-
 import { useStore } from "./store";
 import { useState } from "react";
 
@@ -13,83 +12,76 @@ export const SubmitButton = () => {
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
-    setResult(null);
 
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/pipelines/parse`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nodes, edges }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Backend error");
-      }
-
       const data = await response.json();
       setResult(data);
-    } catch (err) {
-      console.error(err);
-      setError(" Failed to submit pipeline. Check backend or network.");
+    } catch {
+      setError("Backend unreachable");
     }
 
     setLoading(false);
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <div style={container}>
+
       <button
-        type="button"
         onClick={handleSubmit}
         disabled={loading}
-        style={{
-          padding: "10px 20px",
-          borderRadius: 999,
-          border: "none",
-          background: "#22c55e",
-          color: "#022c22",
-          fontWeight: 600,
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
+        style={button}
       >
-        {loading ? "Submitting..." : "Submit"}
+        {loading ? "Analyzing..." : "Submit Pipeline"}
       </button>
 
-     
-    {result && (
-  <div
-    style={{
-      position: "fixed",
-      top: "10px",
-      right: "10px",
-      zIndex: 9999,
-      background: "#0f172a",
-      color: "white",
-      padding: "15px 20px",
-      borderRadius: "10px",
-      minWidth: "220px",
-      boxShadow: "0px 8px 20px rgba(0,0,0,0.4)",
-    }}
-  >
-    <h4 style={{ marginTop: 0 }}> Result</h4>
-    <p><b>Nodes:</b> {result.num_nodes}</p>
-    <p><b>Edges:</b> {result.num_edges}</p>
-    <p><b>DAG:</b> {result.is_dag ? "Yes " : "No "}</p>
-  </div>
-)}
-
-
-     
-      {error && (
-        <div style={{ marginTop: "10px", color: "red" }}>
-          {error}
+      {result && (
+        <div style={resultBox}>
+          <b>Nodes:</b> {result.num_nodes}<br />
+          <b>Edges:</b> {result.num_edges}<br />
+          <b>DAG:</b> {result.is_dag ? "Yes ✅" : "No ❌"}
         </div>
       )}
+
+      {error && <span style={errorStyle}>{error}</span>}
     </div>
   );
+};
+
+const container = {
+  display: "flex",
+  alignItems: "center",
+  gap: 15,
+};
+
+const button = {
+  padding: "10px 20px",
+  borderRadius: 999,
+  border: "none",
+  background: "#22c55e",
+  color: "#022c22",
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+const resultBox = {
+  border: "1px solid #1f2937",
+  borderRadius: 10,
+  background: "#0f172a",
+  padding: "8px 14px",
+  fontSize: 13,
+  color: "#e5e7eb",
+};
+
+const errorStyle = {
+  marginLeft: 10,
+  color: "#f87171",
 };
