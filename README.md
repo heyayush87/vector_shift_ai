@@ -7,189 +7,19 @@ Frontend: https://vector-shift-ai-mauve.vercel.app/
 
 Project Overview
 
-Built a visual pipeline workflow builder using React
 
-Users can drag nodes, connect edges, and validate pipelines
+Part 1 – Node Abstraction & Design System
 
-Real-time validation against backend logic
+In Part 1, I focused on creating a reusable and scalable node architecture instead of hardcoding logic into individual components. I implemented a BaseNode component that acts as a UI wrapper for all nodes, providing consistent layout, headers, styling, input/output handles, and delete functionality. This abstraction removed duplication and allowed every node (Input, LLM, Text, Output, Math, Filter, etc.) to share the same structural behavior while implementing their own local logic. As a result, adding a new node became trivial and required only a standalone logic component, improving maintainability and extensibility of the system.
 
-System determines:
+Part 2 – UI & Layout Improvements
 
-Number of nodes
+For Part 2, I focused on improving the overall user experience and layout design to make the system usable as a real workflow builder. I designed a toolbar that displays available nodes, a central canvas for building pipelines using ReactFlow, and a results panel that shows validation output without navigation or scrolling. I applied a dark theme with consistent spacing, visual hierarchy, and clearly visible handles to improve usability. The layout was optimized so all critical actions—adding nodes, connecting edges, and submitting—can be performed on a single screen with no visual clutter.
 
-Number of connections
+Part 3 – Text Node Enhancements
 
-Whether the graph is a DAG
+Part 3 was focused on making the Text Node dynamic and intelligent. I implemented auto-resizing behavior so the node expands as the user types, enabling multi-line input. I also added template parsing to detect variables written in the format {{variable}}, and for each detected variable, a dynamic input handle is created automatically. This allows variables to be connected to other nodes, making the pipeline functional rather than static. This feature transforms the UI from a visual editor into a real pipeline configuration tool.
 
-Architecture Summary
-Frontend
+Part 4 – Backend Integration & DAG Validation
 
-Built with React + ReactFlow
-
-State managed using Zustand
-
-Pipeline logic stored centrally
-
-Fully modular node system
-
-Custom abstraction layer for fast node creation
-
-Visual editor renders nodes and edges in real time
-
-Backend
-
-Built using FastAPI
-
-Accepts structured JSON pipeline payloads
-
-Returns:
-
-Node count
-
-Edge count
-
-DAG validation result
-
-Implements standard graph algorithms
-
-Development Strategy
-
-Instead of following tasks sequentially, a production-first workflow was used:
-
-Backend integration validated first
-
-Frontend ↔ backend stability ensured
-
-Node abstraction layer created
-
-Styling layered after logic was correct
-
-Text handling & UI refinement added last
-
-This mirrors real-world engineering practices.
-
-Part 1: Node Abstraction
-Objective
-
-Avoid copy-pasting node logic
-
-Create one reusable node base
-
-Standardize visuals and behavior
-
-Achievements
-
-Introduced a shared base node wrapper
-
-Centralized layout and design
-
-Unified delete-button logic
-
-Reduced duplication across node types
-
-Rapid creation of new nodes
-
-Outcome
-
-Adding new nodes now takes minutes
-
-UI consistency is guaranteed
-
-Easier scaling
-
-Part 2: UI & Layout Styling
-Improvements
-
-Toolbox aligned for navigation clarity
-
-Canvas centralized as main workspace
-
-Results displayed without scrolling
-
-Submit button isolated
-
-Dark theme enhances readability
-
-Result
-
-Clean interface
-
-Guided user workflow
-
-Zero visual clutter
-
-Part 3: Text Node Enhancements
-Features Implemented
-
-Auto-expanding text node
-
-Dynamic variable parsing
-
-{{variable}} detection
-
-Auto-generated input handles
-
-Variables become graph inputs
-
-Benefit
-
-Enables real prompt engineering
-
-No static text blocks
-
-Fully customizable behavior
-
-Part 4: Backend Integration
-Workflow
-
-Frontend sends node graph
-
-Backend parses pipeline
-
-Algorithm executes:
-
-Node count
-
-Edge count
-
-DAG detection
-
-Result Handling
-
-Output displayed inline
-
-No page reload
-
-No alerts
-
-Fully reactive UI
-
-Backend Validation Algorithm
-
-Adjacency list constructed from edges
-
-Indegree table prepared
-
-Kahn’s algorithm used for DAG detection
-
-Guarantees accuracy and performance.
-
-Performance & Reliability
-
-DAG detection in linear time: O(N + E)
-
-Zustand ensures minimal re-render
-
-ReactFlow optimizations applied
-
-Single backend call for validation
-
-Zero unnecessary updates
-
-Deployment Stack
-Component	Platform
-Frontend	Vercel
-Backend	Render
-State	Zustand
-UI Engine	ReactFlow
-API	FastAPI
+For Part 4, I connected the frontend to a FastAPI backend where the entire pipeline is sent for validation. When the user clicks submit, all nodes and edges are serialized and transmitted to the API. The backend constructs a graph using an adjacency list and applies Kahn’s Algorithm to calculate whether the graph is a Directed Acyclic Graph (DAG). It also returns the total number of nodes and edges. The frontend then displays these results instantly within the UI. This integration adds real computation to the project and demonstrates full-stack interaction rather than a static frontend-only solution.
